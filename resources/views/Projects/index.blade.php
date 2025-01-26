@@ -1,9 +1,9 @@
+<!-- resources/views/projects/index.blade.php -->
 <x-app-layout>
-
 
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-[#7F55E0] text-white flex flex-col h-screen">
+        <div class="w-64 bg-[#7F55E0] text-white flex flex-col">
             <div class="py-6 px-4">
                 <h1 class="text-2xl font-bold">Freelancer</h1>
             </div>
@@ -17,7 +17,6 @@
                             <span class="ml-2">Dashboard</span>
                         </a>
                     </li>
-
                     <li>
                         <a href="{{ route('projects') }}" class="flex items-center p-2 rounded {{ request()->routeIs('projects') ? 'bg-[#6A45C4]' : 'hover:bg-[#6A45C4]' }}">
                             <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -26,7 +25,6 @@
                             <span class="ml-2">Projects</span>
                         </a>
                     </li>
-
                     <li>
                         <a href="#" class="flex items-center p-2 rounded hover:bg-[#6A45C4]">
                             <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,50 +50,51 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('profile.edit') }}" class="flex items-center p-2 rounded {{ request()->routeIs('profile.edit') ? 'bg-[#6A45C4]' : 'hover:bg-[#6A45C4]' }}">
+                        <a href="#" class="flex items-center p-2 rounded hover:bg-[#6A45C4]">
                             <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v12l3-3 4 4 5-5 3 3V3"></path>
                             </svg>
                             <span class="ml-2">Profile</span>
                         </a>
                     </li>
+                    <!-- Add other sidebar items here -->
                 </ul>
             </nav>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-grow p-6 overflow-y-auto">
-            <!-- Profile Edit Content -->
-            <div>
-                <h2 class="font-semibold text-3xl text-gray-800 dark:text-gray-200 leading-tight mb-6">
-                    {{ __('Edit Profile') }}
-                </h2>
+        <!-- Main Content Area -->
+        <div class="flex-1 p-6 overflow-y-auto">
+            <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-200">Your Projects</h3>
 
-                <div class="space-y-6">
-                    <!-- Update Profile Information Section -->
-                    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
-                        <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Update Profile Information</h3>
-                        <div class="max-w-xl mx-auto">
-                            @include('profile.partials.update-profile-information-form')
+            <div class="mt-4">
+                <a href="{{ route('projects.create') }}" class="bg-[#7F55E0] hover:bg-[#6A45C4] text-white font-bold py-2 px-4 rounded">
+                    Add New Project
+                </a>
+            </div>
+
+            <div class="mt-4 space-y-4">
+                @forelse($projects as $project)
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md flex justify-between items-center">
+                        <div>
+                            <h5 class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ $project->name }}</h5>
+                            <p class="text-gray-600 dark:text-gray-400">Status: {{ ucwords(str_replace('_', ' ', $project->status)) }}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <a href="{{ route('projects.edit', $project->id) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                                Edit
+                            </a>
+                            <form action="{{ route('projects.destroy', $project->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this project?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Delete
+                                </button>
+                            </form>
                         </div>
                     </div>
-
-                    <!-- Update Password Section -->
-                    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
-                        <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Update Password</h3>
-                        <div class="max-w-xl mx-auto">
-                            @include('profile.partials.update-password-form')
-                        </div>
-                    </div>
-
-                    <!-- Delete Account Section -->
-                    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
-                        <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Delete Account</h3>
-                        <div class="max-w-xl mx-auto">
-                            @include('profile.partials.delete-user-form')
-                        </div>
-                    </div>
-                </div>
+                @empty
+                    <p class="text-gray-600 dark:text-gray-400">No projects found.</p>
+                @endforelse
             </div>
         </div>
     </div>

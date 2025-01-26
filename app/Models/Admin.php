@@ -2,24 +2,27 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class Admin extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use   HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
+    protected $guard = 'admin';
     protected $fillable = [
         'name',
         'email',
         'password',
+        'status',
     ];
 
     /**
@@ -43,21 +46,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    /**
-     * Messages sent by the user.
-     */
-    public function sentMessages()
-    {
-        return $this->hasMany(Message::class, 'sender_id');
-    }
-
-    /**
-     * Messages received by the user.
-     */
-    public function receivedMessages()
-    {
-        return $this->hasMany(Message::class, 'receiver_id');
     }
 }
