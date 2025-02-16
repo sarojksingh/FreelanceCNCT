@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FreelancerDashboardController;
@@ -7,6 +7,12 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\ClientDashboarController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\clientfreelancerController;
+use App\Http\Controllers\ClientFreelancerProfileController;
+use Illuminate\Support\Facades\Auth;
+
 
 
 Route::get('/messages', function () {
@@ -23,11 +29,71 @@ Route::post('/messages', function (Illuminate\Http\Request $request) {
 Route::get('/', function () {
     return view('welcome');
 });
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/dashboard', [FreelancerDashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/freelancer/dashboard', [FreelancerDashboardController::class, 'index'])->name('freelancer.dashboard');
+Route::get('/client/dashboard', [ClientDashboarController::class, 'index'])->name('client.dashboard');
+
+Route::get('/dashboard', function () {
+    if (Auth::check()) {
+        if (Auth::user()->role === 'freelancer') {
+            return redirect()->route('freelancer.dashboard');
+        } elseif (Auth::user()->role === 'client') {
+            return redirect()->route('client.dashboard');
+        }
+    }
+    return redirect()->route('login'); // Fallback if not authenticated
+})->name('dashboard');
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/client/freelancers', [ClientFreelancerController::class, 'index'])
+         ->name('freelancers.index');
+});
+Route::middleware('auth')->group(function () {
+    Route::get('/freelancer/profile/{id}', [ClientFreelancerProfileController::class, 'show'])->name('freelancer.profile');
+});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/freelancer/chat/{clientId}', [ChatController::class, 'freelancerChat'])->name('freelancer.chat');
+// });
+
+// routes/web.php
+
+Route::middleware('auth')->group(function () {
+    // Freelancer's Chat Interface (Freelancer side)
+    Route::get('/freelancer/chat/{otherUserId}', [ChatController::class, 'freelancerChat'])->name('freelancer.chat');
+
+    // You can keep the same routes for fetching messages and sending messages
+    Route::get('/chat/fetch/{otherUserId}', [ChatController::class, 'fetchMessages'])->name('chat.fetch');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::delete('/chat/delete/{messageId}', [ChatController::class, 'delete'])->name('chat.delete');
+});
+
+
+Route::get('/messages', [ChatController::class, 'freelancerChat'])->name('Messages');
+
+Route::middleware('auth')->group(function () {
+    // Show chat interface with a specific user (pass the other user ID)
+    Route::get('/chat/{otherUserId}', [ChatController::class, 'index'])->name('chat.index');
+
+    // AJAX route to fetch messages (optional, if you want polling)
+    Route::get('/chat/fetch/{otherUserId}', [ChatController::class, 'fetchMessages'])->name('chat.fetch');
+
+    // AJAX route to send a new message
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::delete('/chat/delete/{messageId}', [ChatController::class, 'delete'])->name('chat.delete');
+
+
+
+});
+
+// Route::get('/dashboard', [FreelancerDashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/clientdashboard', [ClientDashboarController::class, 'index'])->name('Clientdashboard');
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
 
 // Route::get('/clients', [ClientController::class, 'index'])->name('clients');
@@ -41,14 +107,19 @@ Route::delete('/dashboard/clients/{client}', [ClientController::class, 'destroy'
 
 Route::post('/dashboard/clients/{client}/notes', [ClientController::class, 'addNote'])->name('clients.addNote');
 
-Route::get('/messages', [ClientController::class, 'index'])->name('Messages');
+
 
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::match(['post', 'patch'], '/profile/update-image', [ProfileController::class, 'updateImage'])
+    ->name('profile.update-image');
+
+
 });
+
 Route::middleware(['auth'])->group(function () {
     Route::get('clients/{client}', [ClientController::class, 'show'])->name('clients.show');
     // Route::get('projects/{project}', [ProjectController::class, 'show'])->name('projects.show');

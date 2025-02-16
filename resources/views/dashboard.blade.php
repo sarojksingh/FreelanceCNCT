@@ -15,7 +15,7 @@
 <x-app-layout>
 <body class="bg-gray-100 dark:bg-gray-900">
     <div class="flex h-screen">
-        <!-- Sidebar -->
+        {{-- <!-- Sidebar -->
         <div class="w-64 bg-[#7F55E0] text-white flex flex-col">
             <div class="py-6 px-4">
                 <h1 class="text-2xl font-bold">Freelancer</h1>
@@ -74,7 +74,7 @@
                     <!-- Sidebar items -->
                 </ul>
             </nav>
-        </div>
+        </div> --}}
 
         <!-- Main Content -->
         <div class="flex-grow bg-gray-100 dark:bg-gray-900">

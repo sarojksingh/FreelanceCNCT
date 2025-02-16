@@ -20,6 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'profile_image',
     ];
 
     /**
@@ -50,7 +52,7 @@ class User extends Authenticatable
      */
     public function sentMessages()
     {
-        return $this->hasMany(Message::class, 'sender_id');
+        return $this->hasMany(ChatMessage::class, 'sender_id');
     }
 
     /**
@@ -58,6 +60,6 @@ class User extends Authenticatable
      */
     public function receivedMessages()
     {
-        return $this->hasMany(Message::class, 'receiver_id');
+        return $this->hasMany(ChatMessage::class, 'receiver_id');
     }
 }

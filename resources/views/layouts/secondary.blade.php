@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name', 'Laravel') }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+</head>
+<body class="font-sans bg-gray-100">
+
+    <!-- Navbar (Place your navbar code here) -->
+    <header class="bg-white shadow">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="text-2xl font-bold text-purple-600">FreelanceHub</div>
+
+            <nav class="hidden md:flex space-x-4">
+                <!-- Your dropdowns and links go here -->
+                <a class="text-gray-700 hover:text-purple-600" href="{{ route('freelancers.index') }}">Find talent</a>
+                <a class="text-gray-700 hover:text-purple-600" href="#">Find work</a>
+                <a class="text-gray-700 hover:text-purple-600" href="#">Why FreelanceConnect</a>
+                <a class="text-gray-700 hover:text-purple-600" href="#">Pricing</a>
+            </nav>
+
+            <!-- Authentication Links -->
+            @if (Route::has('login'))
+                <div class="flex space-x-4">
+                    @auth
+                        <a href="{{ url('/dashboard') }}" class="text-gray-700 hover:text-purple-600">Dashboard</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="text-gray-700 hover:text-purple-600">Logout</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-purple-600">Log in</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="text-gray-700 hover:text-purple-600">Sign Up</a>
+                        @endif
+                    @endauth
+                </div>
+            @endif
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        @yield('content') <!-- This is where the content of the page will go -->
+    </div>
+
+</body>
+</html>

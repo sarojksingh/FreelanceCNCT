@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -22,20 +23,72 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile information.
+     * Update the user's profile information, including image.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Validate request including image
+        $validated = $request->validated();
+
+        // Handle image upload
+        if ($request->hasFile('profile_image')) {
+            // Store new image in public storage
+            $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+
+            // Delete old image if exists
+            if ($user->profile_image) {
+                Storage::disk('public')->delete($user->profile_image);
+            }
+
+            // Update image path in the database
+            $validated['profile_image'] = $imagePath;
         }
 
-        $request->user()->save();
+        // Update user data
+        $user->fill($validated);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
+
+    public function updateImage(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'profile_image' => ['nullable', 'image', 'max:2048']
+        ]);
+
+        $user = $request->user();
+
+        if (!$user) {
+            return Redirect::route('profile.edit')->with('error', 'User not found.');
+        }
+
+        try {
+            if ($request->hasFile('profile_image')) {
+                $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+
+                // Delete old image if it exists
+                if (!empty($user->profile_image) && Storage::disk('public')->exists($user->profile_image)) {
+                    Storage::disk('public')->delete($user->profile_image);
+                }
+
+                // Update user profile image
+                $user->update(['profile_image' => $imagePath]);
+            }
+
+            return Redirect::route('profile.edit')->with('status', 'image-updated');
+        } catch (\Exception $e) {
+            return Redirect::route('profile.edit')->with('error', 'Failed to update profile image. Please try again.');
+        }
+    }
+
 
     /**
      * Delete the user's account.
@@ -48,8 +101,12 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        // Delete profile image if exists
+        if ($user->image) {
+            Storage::disk('public')->delete($user->image);
+        }
 
+        Auth::logout();
         $user->delete();
 
         $request->session()->invalidate();

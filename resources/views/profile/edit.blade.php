@@ -1,99 +1,50 @@
 <x-app-layout>
-
-
     <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div class="w-64 bg-[#7F55E0] text-white flex flex-col h-screen">
-            <div class="py-6 px-4">
-                <h1 class="text-2xl font-bold">Freelancer</h1>
-            </div>
-            <nav class="flex-grow">
-                <ul class="space-y-2 px-4">
-                    <li>
-                        <a href="{{ route('dashboard') }}" class="flex items-center p-2 rounded {{ request()->routeIs('dashboard') ? 'bg-[#6A45C4]' : 'hover:bg-[#6A45C4]' }}">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                            </svg>
-                            <span class="ml-2">Dashboard</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="{{ route('projects') }}" class="flex items-center p-2 rounded {{ request()->routeIs('projects') ? 'bg-[#6A45C4]' : 'hover:bg-[#6A45C4]' }}">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            <span class="ml-2">Projects</span>
-                        </a>
-                    </li>
-
-                    <li>
-                        <a href="#" class="flex items-center p-2 rounded hover:bg-[#6A45C4]">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18m-9 4h9"></path>
-                            </svg>
-                            <span class="ml-2">Client</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center p-2 rounded hover:bg-[#6A45C4]">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                            </svg>
-                            <span class="ml-2">Message</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="flex items-center p-2 rounded hover:bg-[#6A45C4]">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18m-9 4h9"></path>
-                            </svg>
-                            <span class="ml-2">Setting</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('profile.edit') }}" class="flex items-center p-2 rounded {{ request()->routeIs('profile.edit') ? 'bg-[#6A45C4]' : 'hover:bg-[#6A45C4]' }}">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v12l3-3 4 4 5-5 3 3V3"></path>
-                            </svg>
-                            <span class="ml-2">Profile</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-
         <!-- Main Content -->
         <div class="flex-grow p-6 overflow-y-auto">
-            <!-- Profile Edit Content -->
-            <div>
-                <h2 class="font-semibold text-3xl text-gray-800 dark:text-gray-200 leading-tight mb-6">
-                    {{ __('Edit Profile') }}
-                </h2>
+            <h2 class="font-semibold text-3xl text-gray-800 dark:text-gray-200 leading-tight mb-6">
+                {{ __('Edit Profile') }}
+            </h2>
+            <div class="space-y-6">
+                <!-- Profile Image Section -->
+                <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
+                    <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Profile Image</h3>
+                    <div class="max-w-xl mx-auto text-center">
+                        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Profile Image"
+                            class="w-32 h-32 rounded-full mx-auto mb-4">
+                            <form action="{{ route('profile.update-image') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="file" name="profile_image">
+                                <button type="submit" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-blue-700">Update Image</button>
+                            </form>
 
-                <div class="space-y-6">
-                    <!-- Update Profile Information Section -->
-                    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
-                        <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Update Profile Information</h3>
-                        <div class="max-w-xl mx-auto">
-                            @include('profile.partials.update-profile-information-form')
-                        </div>
+
+
                     </div>
+                </div>
 
-                    <!-- Update Password Section -->
-                    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
-                        <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Update Password</h3>
-                        <div class="max-w-xl mx-auto">
-                            @include('profile.partials.update-password-form')
-                        </div>
+                <!-- Update Profile Information Section -->
+                <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
+                    <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Update Profile
+                        Information</h3>
+                    <div class="max-w-xl mx-auto">
+                        @include('profile.partials.update-profile-information-form')
                     </div>
+                </div>
 
-                    <!-- Delete Account Section -->
-                    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
-                        <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Delete Account</h3>
-                        <div class="max-w-xl mx-auto">
-                            @include('profile.partials.delete-user-form')
-                        </div>
+                <!-- Update Password Section -->
+                <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
+                    <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Update Password</h3>
+                    <div class="max-w-xl mx-auto">
+                        @include('profile.partials.update-password-form')
+                    </div>
+                </div>
+
+                <!-- Delete Account Section -->
+                <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-8">
+                    <h3 class="text-2xl font-semibold" style="color: #7F55E0; margin-bottom: 24px;">Delete Account</h3>
+                    <div class="max-w-xl mx-auto">
+                        @include('profile.partials.delete-user-form')
                     </div>
                 </div>
             </div>
