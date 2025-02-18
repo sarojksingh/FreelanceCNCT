@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold mb-4">{{ $freelancer->name }}</h1>
         <p class="mb-2"><strong>Email:</strong> {{ $freelancer->email }}</p>
         <p class="mb-2"><strong>Skills:</strong> {{ $freelancer->skills }}</p>
-        <p class="mb-2"><strong>About:</strong> {{ $freelancer->profile_description }}</p>
+        <p class="mb-2"><strong>About:</strong> {{ $freelancer->experience }}</p>
 
         <!-- Start Chat Button -->
         <a href="{{ route('chat.index', ['otherUserId' => $freelancer->id]) }}"

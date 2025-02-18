@@ -17,4 +17,5 @@ class clientFreelancerProfileController extends Controller
         // Return the view from the clientfreelancer folder
         return view('clientfreelancer.profile', compact('freelancer'));
     }
+
 }

@@ -22,6 +22,10 @@ class User extends Authenticatable
         'password',
         'role',
         'profile_image',
+        'skills',
+        'experience',
+        'project_budget',
+        'location',
     ];
 
     /**
@@ -61,5 +65,17 @@ class User extends Authenticatable
     public function receivedMessages()
     {
         return $this->hasMany(ChatMessage::class, 'receiver_id');
+    }
+
+    // Calculate the average rating for a freelancer
+    public function averageRating()
+    {
+        return $this->hasMany(Rating::class, 'freelancer_id')->avg('rating');
+    }
+
+    // Display total number of ratings
+    public function totalRatings()
+    {
+        return $this->hasMany(Rating::class, 'freelancer_id')->count();
     }
 }

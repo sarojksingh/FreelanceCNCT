@@ -11,10 +11,15 @@ use App\Http\Controllers\ClientDashboarController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\clientfreelancerController;
 use App\Http\Controllers\ClientFreelancerProfileController;
+use App\Http\Controllers\RatingController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 
 
-
+Route::middleware('guest')->group(function () {
+    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+});
 Route::get('/messages', function () {
     return view('messages'); // Return the messages view
 })->name('messages.index');
@@ -73,6 +78,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::delete('/chat/delete/{messageId}', [ChatController::class, 'delete'])->name('chat.delete');
 });
+Route::post('/{freelancer}/rate', [RatingController::class, 'rateFreelancer'])->name('rate.freelancer');
 
 
 Route::get('/messages', [ChatController::class, 'freelancerChat'])->name('Messages');
@@ -112,7 +118,7 @@ Route::post('/dashboard/clients/{client}/notes', [ClientController::class, 'addN
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::match(['post', 'patch'], '/profile/update-image', [ProfileController::class, 'updateImage'])
     ->name('profile.update-image');

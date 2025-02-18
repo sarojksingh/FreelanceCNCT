@@ -61,20 +61,75 @@
                                 @endforeach
                             @endif
                         </div>
-                        <!-- Display Rating (using font awesome icons) -->
+                        <div class="flex justify-center">
+                            <form action="{{ route('rate.freelancer', $freelancer->id) }}" method="POST">
+                                @csrf
+                                <div class="flex items-center space-x-2">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @php
+                                            $uniqueId = 'rating-' . $freelancer->id . '-' . $i;
+                                        @endphp
+                                        <input type="radio" name="rating_{{ $freelancer->id }}" value="{{ $i }}" id="{{ $uniqueId }}" class="hidden" required>
+                                        <label for="{{ $uniqueId }}" class="cursor-pointer text-2xl star-label">
+                                            ★
+                                        </label>
+                                    @endfor
+                                </div>
+                                <button type="submit"
+                                    class="mt-2 px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    Submit Rating
+                                </button>
+                            </form>
+
+                        </div>
+
+
+
+                        <style>
+                            .star-label {
+                                color: #d1d5db;
+                                /* Default gray color */
+                                transition: color 0.2s;
+                            }
+
+                            input[type="radio"]:checked+label,
+                            input[type="radio"]:checked+label~label {
+                                color: #fbbf24;
+                                /* Yellow color for selected/hovered stars */
+                            }
+
+                            label:hover,
+                            label:hover~label {
+                                color: #fbbf24 !important;
+                                /* Ensure hover effect */
+                                cursor: pointer;
+                            }
+                        </style>
+
+
+
+                        <!-- Freelancer's Profile Rating Display -->
                         <div class="flex justify-center items-center mb-4">
                             @php
-                                $fullStars = floor($freelancer->rating);
-                                $halfStar = $freelancer->rating - $fullStars >= 0.5;
+                                $averageRating = $freelancer->averageRating();
+                                $totalRatings = $freelancer->totalRatings();
+                                $fullStars = floor($averageRating);
+                                $halfStar = $averageRating - $fullStars >= 0.5;
                             @endphp
+                            <!-- Full Stars -->
                             @for ($i = 0; $i < $fullStars; $i++)
                                 <i class="fas fa-star text-yellow-500"></i>
                             @endfor
+                            <!-- Half Star -->
                             @if ($halfStar)
                                 <i class="fas fa-star-half-alt text-yellow-500"></i>
                             @endif
-                            <span class="ml-2 text-gray-600">({{ number_format($freelancer->rating, 1) }})</span>
+                            <!-- Rating display -->
+                            <span class="ml-2 text-gray-600">({{ number_format($averageRating, 1) }} from
+                                {{ $totalRatings }} ratings)</span>
                         </div>
+
+
                         <!-- View Profile Link: This should lead to a dynamic freelancer profile page where the client can then start a chat -->
                         <a href="{{ route('freelancer.profile', ['id' => $freelancer->id]) }}"
                             class="text-purple-600 font-semibold block text-center">

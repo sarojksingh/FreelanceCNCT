@@ -25,16 +25,21 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information, including image.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
         $user = $request->user();
 
-        // Validate request including image
-        $validated = $request->validated();
+        // Validate request including new fields
+        $validated = $request->validate([
+            'profile_image' => ['nullable', 'image', 'max:2048'],
+            'skills' => ['nullable', 'string', 'max:255'],
+            'experience' => ['nullable', 'string', 'max:1000'],
+            'project_budget' => ['nullable', 'string', 'max:255'],
+            'location' => ['nullable', 'string', 'max:255'],
+        ]);
 
         // Handle image upload
         if ($request->hasFile('profile_image')) {
-            // Store new image in public storage
             $imagePath = $request->file('profile_image')->store('profile_images', 'public');
 
             // Delete old image if exists
@@ -42,21 +47,16 @@ class ProfileController extends Controller
                 Storage::disk('public')->delete($user->profile_image);
             }
 
-            // Update image path in the database
             $validated['profile_image'] = $imagePath;
         }
 
-        // Update user data
-        $user->fill($validated);
+        // Update user profile fields
+        $user->update($validated);
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.edit')->with('status', 'Profile updated successfully.');
     }
+
+
 
     public function updateImage(Request $request): RedirectResponse
     {
@@ -93,6 +93,19 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
+    /**
+     * Delete the user's profile image if it exists.
+     */
+    private function deleteOldImage($imagePath)
+    {
+        if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+            Storage::disk('public')->delete($imagePath);
+        }
+    }
+
+    /**
+     * Delete the user's account.
+     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
@@ -102,9 +115,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         // Delete profile image if exists
-        if ($user->image) {
-            Storage::disk('public')->delete($user->image);
-        }
+        $this->deleteOldImage($user->profile_image);
 
         Auth::logout();
         $user->delete();
