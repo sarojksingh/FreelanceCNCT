@@ -51,6 +51,10 @@ class User extends Authenticatable
         ];
     }
 
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
     /**
      * Messages sent by the user.
      */
@@ -77,5 +81,10 @@ class User extends Authenticatable
     public function totalRatings()
     {
         return $this->hasMany(Rating::class, 'freelancer_id')->count();
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Rating::class, 'freelancer_id');
     }
 }

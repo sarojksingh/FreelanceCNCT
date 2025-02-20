@@ -9,12 +9,17 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name', 'description', 'status',
-    ];
+    protected $fillable = ['name', 'description', 'status', 'image', 'user_id'];
 
-    // public function client()
-    // {
-    //     return $this->belongsTo(Client::class);
-    // }
+    // Relationship: A project belongs to a freelancer (user)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // A project has many images
+    public function images()
+    {
+        return $this->hasMany(ProjectImage::class);
+    }
 }

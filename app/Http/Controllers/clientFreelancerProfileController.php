@@ -1,21 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\User;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class clientFreelancerProfileController extends Controller
+class ClientFreelancerProfileController extends Controller
 {
     public function show($id)
     {
-        // Retrieve the freelancer's details (ensure they have the 'freelancer' role)
         $freelancer = User::where('id', $id)
-                          ->where('role', 'freelancer')
-                          ->firstOrFail();
+            ->where('role', 'freelancer')
+            ->with('projects') // Ensure projects are loaded
+            ->firstOrFail();
 
-        // Return the view from the clientfreelancer folder
         return view('clientfreelancer.profile', compact('freelancer'));
     }
-
 }
