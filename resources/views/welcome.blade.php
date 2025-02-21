@@ -11,6 +11,8 @@
             font-family: 'Inter', sans-serif;
         }
     </style>
+    <!-- Font Awesome for profile icon -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -70,6 +72,10 @@
                             <a href="{{ route('register') }}" class="text-gray-700 hover:text-purple-600">Sign Up</a>
                         @endif
                     @endauth
+                     <!-- Profile Edit Link -->
+                     <a href="{{ route('profile.edit') }}" class="text-gray-700 hover:text-purple-600">
+                        <i class="fas fa-user-edit"></i> <!-- Profile Edit Icon -->
+                    </a>
                 </div>
             @endif
 

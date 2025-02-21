@@ -7,10 +7,12 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <!-- Font Awesome for profile icon -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body class="font-sans bg-gray-100">
 
-    <!-- Navbar (Place your navbar code here) -->
+    <!-- Navbar -->
     <header class="bg-white shadow">
         <div class="container mx-auto px-4 py-4 flex items-center justify-between">
             <div class="text-2xl font-bold text-purple-600">FreelanceHub</div>
@@ -27,6 +29,7 @@
             @if (Route::has('login'))
                 <div class="flex space-x-4">
                     @auth
+
                         <a href="{{ url('/dashboard') }}" class="text-gray-700 hover:text-purple-600">Dashboard</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -38,6 +41,11 @@
                             <a href="{{ route('register') }}" class="text-gray-700 hover:text-purple-600">Sign Up</a>
                         @endif
                     @endauth
+
+                     <!-- Profile Edit Link -->
+                     <a href="{{ route('client.profile.edit') }}" class="text-gray-700 hover:text-purple-600">
+                        <i class="fas fa-user-edit"></i> <!-- Profile Edit Icon -->
+                    </a>
                 </div>
             @endif
         </div>

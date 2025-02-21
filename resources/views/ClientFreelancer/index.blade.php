@@ -69,7 +69,8 @@
                                         @php
                                             $uniqueId = 'rating-' . $freelancer->id . '-' . $i;
                                         @endphp
-                                        <input type="radio" name="rating_{{ $freelancer->id }}" value="{{ $i }}" id="{{ $uniqueId }}" class="hidden" required>
+                                        <input type="radio" name="rating_{{ $freelancer->id }}"
+                                            value="{{ $i }}" id="{{ $uniqueId }}" class="hidden" required>
                                         <label for="{{ $uniqueId }}" class="cursor-pointer text-2xl star-label">
                                             ★
                                         </label>
@@ -173,11 +174,41 @@
         </div>
     </section>
 
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        @foreach ($freelancers as $freelancer)
+            @foreach ($freelancer->reviews as $review)
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="text-gray-600 mb-4">"{{ $review->review }}"</p> <!-- Display the review -->
+                    <div class="flex items-center">
+                        <!-- Display client profile image -->
+                        <img alt="Portrait of a satisfied client" class="w-10 h-10 rounded-full mr-4"
+                            src="{{ asset('storage/' . $review->client->profile_image) }}" width="40" height="40" />
+
+                        <div>
+                            <p class="text-gray-700 font-semibold">{{ $review->client->name }}</p>
+                            <p class="text-gray-600 text-sm">
+                                {{ $review->client->role == 'client' ? 'Client' : 'User' }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        @endforeach
+
+
+
+    </div>
+
+    </div>
+    </section>
+
+
     <!-- Call to Action Section (static or dynamic as needed) -->
     <section class="py-20 bg-purple-600 text-white">
         <div class="container mx-auto px-4 text-center">
             <h2 class="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-            <p class="text-lg mb-8">Post your project today and find the perfect freelancer to bring your ideas to life.</p>
+            <p class="text-lg mb-8">Post your project today and find the perfect freelancer to bring your ideas to life.
+            </p>
             <a href="#" class="bg-white text-purple-600 px-6 py-3 rounded-full font-semibold">Post a Project</a>
         </div>
     </section>

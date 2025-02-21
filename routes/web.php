@@ -12,6 +12,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\clientfreelancerController;
 use App\Http\Controllers\ClientFreelancerProfileController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ClientProfileController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 
@@ -80,6 +81,13 @@ Route::middleware('auth')->group(function () {
 });
 Route::post('/{freelancer}/rate', [RatingController::class, 'rateFreelancer'])->name('rate.freelancer');
 
+
+
+// Route for client profile edit
+Route::get('/client/profile/edit', [ClientProfileController::class, 'edit'])->name('client.profile.edit');
+
+// Route for client profile update (submit the form)
+Route::put('/client/profile/edit', [ClientProfileController::class, 'update'])->name('client.profile.update');
 
 Route::get('/messages', [ChatController::class, 'freelancerChat'])->name('Messages');
 

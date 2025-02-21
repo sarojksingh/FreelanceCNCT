@@ -1,19 +1,24 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class clientfreelancerController extends Controller
+class ClientFreelancerController extends Controller
 {
     public function index()
     {
-        // Query for freelancers (you might want to paginate if there are many)
-        $freelancers = User::where('role', 'freelancer')->paginate(12);
-        // Load freelancer's reviews along with the user (client) who gave the review
-        // $freelancers->load(['reviews.user']);
+        // Query freelancers who have reviews with non-empty review content, and eager load the client data
+        $freelancers = User::where('role', 'freelancer')
+            ->has('reviews')  // Ensures only freelancers with reviews are included
+            ->with(['reviews' => function ($query) {
+                // Filter out reviews with empty review text
+                $query->whereNotNull('review')->where('review', '!=', '');
+            }, 'reviews.client'])  // Eager load the client who posted the review
+            ->paginate(12);  // Paginate the results
 
-        // Pass the freelancer data to the view located at clientFreelancer/index.blade.php
+        // Pass freelancers data to the view
         return view('clientFreelancer.index', compact('freelancers'));
     }
 }
