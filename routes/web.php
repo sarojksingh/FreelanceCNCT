@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -13,8 +15,15 @@ use App\Http\Controllers\clientfreelancerController;
 use App\Http\Controllers\ClientFreelancerProfileController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ClientProfileController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+
+use App\Http\Controllers\PaymentController;
+
 
 
 Route::middleware('guest')->group(function () {
@@ -37,9 +46,7 @@ Route::get('/', function () {
 });
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::get('/freelancer/dashboard', [FreelancerDashboardController::class, 'index'])->name('freelancer.dashboard');
 Route::get('/client/dashboard', [ClientDashboarController::class, 'index'])->name('client.dashboard');
@@ -56,6 +63,16 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+// Route::middleware(['auth', 'admin'])->group(function () {
+//     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+// });
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
+Route::get('/admin/users/create', [UserController::class, 'create'])->name('admin.users.create');
+Route::get('/admin/users/{user}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
+Route::delete('admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/client/freelancers', [ClientFreelancerController::class, 'index'])
@@ -64,11 +81,11 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/freelancer/profile/{id}', [ClientFreelancerProfileController::class, 'show'])->name('freelancer.profile');
 });
-// Route::middleware('auth')->group(function () {
-//     Route::get('/freelancer/chat/{clientId}', [ChatController::class, 'freelancerChat'])->name('freelancer.chat');
-// });
 
-// routes/web.php
+
+
+
+
 
 Route::middleware('auth')->group(function () {
     // Freelancer's Chat Interface (Freelancer side)
@@ -80,7 +97,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/chat/delete/{messageId}', [ChatController::class, 'delete'])->name('chat.delete');
 });
 Route::post('/{freelancer}/rate', [RatingController::class, 'rateFreelancer'])->name('rate.freelancer');
-
+Route::post('/{freelancer}/review', [RatingController::class, 'reviewFreelancer'])->name('review.freelancer');
 
 
 // Route for client profile edit
@@ -88,6 +105,8 @@ Route::get('/client/profile/edit', [ClientProfileController::class, 'edit'])->na
 
 // Route for client profile update (submit the form)
 Route::put('/client/profile/edit', [ClientProfileController::class, 'update'])->name('client.profile.update');
+
+Route::get('/about',[AboutController::class, 'index'])->name('about');
 
 Route::get('/messages', [ChatController::class, 'freelancerChat'])->name('Messages');
 
@@ -167,6 +186,13 @@ Route::middleware('auth')->group(function () {
 
 
 });
+
+
+Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
+Route::post('pay', [PaymentController::class, 'pay']);
+Route::get('payment/success', [PaymentController::class, 'success']);
+Route::get('payment/cancel', [PaymentController::class, 'cancel']);
+
 
 
 require __DIR__.'/auth.php';

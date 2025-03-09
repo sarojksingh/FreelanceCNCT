@@ -55,7 +55,7 @@
         <p class="text-red-600">{{ session('error') }}</p>
     @endif
 
-    <form action="{{ route('rate.freelancer', $freelancer->id) }}" method="POST">
+    <form action="{{ route('review.freelancer', $freelancer->id) }}" method="POST">
         @csrf
 
         <!-- Review Field -->

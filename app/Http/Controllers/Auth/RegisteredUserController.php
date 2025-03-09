@@ -29,15 +29,13 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        // Validate the incoming request, including the role field
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:freelancer,client'], // Validate role
+            'role' => ['required', 'in:freelancer,client,admin'], // Add 'admin' to role validation
         ]);
 
-        // Create the user with the selected role
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -45,16 +43,30 @@ class RegisteredUserController extends Controller
             'role' => $request->role, // Store the role
         ]);
 
-        // Fire the Registered event and log the user in
         event(new Registered($user));
-
         Auth::login($user);
 
-        // Redirect to the appropriate dashboard based on the role
+        // **Check if the user is an admin**
+        if ($user->role === 'admin') {
+            // Predefined admin email and ID
+            $adminEmail = 'admin@example.com'; // Replace with your admin email
+            $adminPassword = 'admin123'; // Replace with your admin password
+
+            // Check if the email and password match the predefined admin credentials
+            if ($user->email === $adminEmail && Hash::check($request->password, $adminPassword)) {
+                // Redirect to admin dashboard
+                return redirect()->route('admin.dashboard');
+            } else {
+                // If the credentials don't match, return an error
+                return redirect()->back()->withErrors(['email' => 'Admin credentials are incorrect']);
+            }
+        }
+
+        // **For other users: freelancers and clients**
         if ($user->role === 'freelancer') {
-            return redirect()->route('freelancer.dashboard'); // Freelancer dashboard
+            return redirect()->route('freelancer.dashboard'); // Redirect freelancer
         } else {
-            return redirect()->route('client.dashboard'); // Client dashboard
+            return redirect()->route('client.dashboard'); // Redirect client
         }
     }
 }

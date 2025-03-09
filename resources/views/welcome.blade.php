@@ -1,3 +1,7 @@
+<?php
+use Illuminate\Support\Facades\Route;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,7 +24,7 @@
     <header class="bg-white shadow">
         <div class="container mx-auto px-4 py-4 flex items-center justify-between">
             <!-- Logo -->
-            <div class="text-2xl font-bold text-purple-600">FreelanceHub</div>
+            <div class="text-2xl font-bold text-purple-600">FreelanceConnect</div>
 
             <!-- Main Navigation (visible on md and up) -->
             <nav class="hidden md:flex space-x-4">
@@ -52,7 +56,7 @@
                 <a class="text-gray-700 hover:text-purple-600" href="#">
                     What's new
                 </a>
-                <a class="text-gray-700 hover:text-purple-600" href="#">
+                <a class="text-gray-700 hover:text-purple-600" href="{{ route('payment.index') }}">
                     Pricing
                 </a>
             </nav>
@@ -73,7 +77,7 @@
                         @endif
                     @endauth
                      <!-- Profile Edit Link -->
-                     <a href="{{ route('profile.edit') }}" class="text-gray-700 hover:text-purple-600">
+                     <a href="{{ route('client.profile.edit') }}" class="text-gray-700 hover:text-purple-600">
                         <i class="fas fa-user-edit"></i> <!-- Profile Edit Icon -->
                     </a>
                 </div>

@@ -1,3 +1,6 @@
+<?php
+use Illuminate\Support\Facades\Route;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,14 +18,15 @@
     <!-- Navbar -->
     <header class="bg-white shadow">
         <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="text-2xl font-bold text-purple-600">FreelanceHub</div>
+            <div class="text-2xl font-bold text-purple-600">FreelanceConnect</div>
 
             <nav class="hidden md:flex space-x-4">
                 <!-- Your dropdowns and links go here -->
                 <a class="text-gray-700 hover:text-purple-600" href="{{ route('freelancers.index') }}">Find talent</a>
                 <a class="text-gray-700 hover:text-purple-600" href="#">Find work</a>
-                <a class="text-gray-700 hover:text-purple-600" href="#">Why FreelanceConnect</a>
-                <a class="text-gray-700 hover:text-purple-600" href="#">Pricing</a>
+                <a class="text-gray-700 hover:text-purple-600" href="{{ route('about') }}">Why FreelanceConnect</a>
+
+                <a class="text-gray-700 hover:text-purple-600" href="{{ route('payment.index') }}">Pricing</a>
             </nav>
 
             <!-- Authentication Links -->
@@ -42,10 +46,11 @@
                         @endif
                     @endauth
 
-                     <!-- Profile Edit Link -->
-                     <a href="{{ route('client.profile.edit') }}" class="text-gray-700 hover:text-purple-600">
+                    @if(auth()->user()->role === 'client')
+                    <a href="{{ route('client.profile.edit') }}" class="text-gray-700 hover:text-purple-600">
                         <i class="fas fa-user-edit"></i> <!-- Profile Edit Icon -->
                     </a>
+                @endif
                 </div>
             @endif
         </div>

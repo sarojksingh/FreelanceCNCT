@@ -14,6 +14,53 @@ class RatingController extends Controller
         // Ensure the user is logged in and is a client
         $user = Auth::user();
         if ($user->role !== 'client') {
+            return redirect()->back()->with('error', 'Only clients can rate freelancers.');
+        }
+
+        // The field name will dynamically change for each freelancer
+        $ratingField = 'rating_' . $freelancer->id;
+
+        // Validate the rating input (should be between 1 and 5)
+        $request->validate([
+            $ratingField => 'required|integer|between:1,5', // Validate the specific rating
+            'review' => 'nullable|string|max:500',
+        ]);
+
+        // Check if the client has already rated this freelancer
+        $existingReview = Rating::where('user_id', $user->id)
+            ->where('freelancer_id', $freelancer->id)
+            ->first();
+
+        if ($existingReview) {
+            // If the rating already exists, update it with the new rating and review
+            $existingReview->update([
+                'rating' => $request->$ratingField,  // Update the rating
+                'review' => $request->review,       // Update the review (optional)
+            ]);
+            return redirect()->back()->with('success', 'Your rating has been updated.');
+        } else {
+            // If no rating exists, create a new one
+            Rating::create([
+                'user_id' => $request->user()->id,  // The authenticated user
+                'freelancer_id' => $freelancer->id,  // The freelancer being rated
+                'rating' => $request->$ratingField,  // Access the dynamic rating field
+                'review' => $request->review,       // The review value from the form (optional)
+            ]);
+            return redirect()->back()->with('success', 'Your rating has been submitted.');
+        }
+    }
+
+
+
+
+
+
+
+    public function reviewFreelancer(Request $request, User $freelancer)
+    {
+        // Ensure the user is logged in and is a client
+        $user = Auth::user();
+        if ($user->role !== 'client') {
             return redirect()->back()->with('error', 'Only clients can submit reviews.');
         }
 

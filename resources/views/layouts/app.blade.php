@@ -57,7 +57,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center p-2 rounded hover:bg-[#6A45C4]">
+                            <a href="/freelancer/chat/2" class="flex items-center p-2 rounded hover:bg-[#6A45C4]">
                                 <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

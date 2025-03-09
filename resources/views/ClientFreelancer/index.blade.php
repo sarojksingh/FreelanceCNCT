@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Str;
+@endphp
+
 @extends('layouts.secondary')
 
 @section('content')
@@ -70,7 +74,8 @@
                                             $uniqueId = 'rating-' . $freelancer->id . '-' . $i;
                                         @endphp
                                         <input type="radio" name="rating_{{ $freelancer->id }}"
-                                            value="{{ $i }}" id="{{ $uniqueId }}" class="hidden" required>
+                                            value="{{ $i }}" id="{{ $uniqueId }}" class="hidden"
+                                            {{ old('rating_' . $freelancer->id) == $i ? 'checked' : '' }} required>
                                         <label for="{{ $uniqueId }}" class="cursor-pointer text-2xl star-label">
                                             ★
                                         </label>
@@ -81,6 +86,7 @@
                                     Submit Rating
                                 </button>
                             </form>
+
 
                         </div>
 
@@ -96,7 +102,7 @@
                             input[type="radio"]:checked+label,
                             input[type="radio"]:checked+label~label {
                                 color: #fbbf24;
-                                /* Yellow color for selected/hovered stars */
+                                /* Yellow color for selected stars */
                             }
 
                             label:hover,
@@ -110,25 +116,37 @@
 
 
                         <!-- Freelancer's Profile Rating Display -->
+                        <!-- Freelancer's Profile Rating Display -->
                         <div class="flex justify-center items-center mb-4">
                             @php
+                                // Get the average rating from the model
                                 $averageRating = $freelancer->averageRating();
                                 $totalRatings = $freelancer->totalRatings();
-                                $fullStars = floor($averageRating);
-                                $halfStar = $averageRating - $fullStars >= 0.5;
+                                $fullStars = floor($averageRating); // Full stars (integer part)
+                                $halfStar = $averageRating - $fullStars >= 0.5; // If 0.5 or more, show half star
+                                $emptyStars = 5 - ceil($averageRating); // Empty stars remaining
                             @endphp
+
                             <!-- Full Stars -->
                             @for ($i = 0; $i < $fullStars; $i++)
                                 <i class="fas fa-star text-yellow-500"></i>
                             @endfor
+
                             <!-- Half Star -->
                             @if ($halfStar)
                                 <i class="fas fa-star-half-alt text-yellow-500"></i>
                             @endif
+
+                            <!-- Empty Stars -->
+                            @for ($i = 0; $i < $emptyStars; $i++)
+                                <i class="fas fa-star text-gray-300"></i>
+                            @endfor
+
                             <!-- Rating display -->
                             <span class="ml-2 text-gray-600">({{ number_format($averageRating, 1) }} from
                                 {{ $totalRatings }} ratings)</span>
                         </div>
+
 
 
                         <!-- View Profile Link: This should lead to a dynamic freelancer profile page where the client can then start a chat -->

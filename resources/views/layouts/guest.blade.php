@@ -16,15 +16,12 @@
     </head>
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-100 sm:pt-50 bg-gray-100 dark:bg-gray-900">
-            {{-- <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div> --}}
 
-            <div class="w-[800px] h-[800px] bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg flex items-center justify-center">
-                {{ $slot }}
-            </div>
+
+            <div class="w-[1900px] h-[850px] bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg flex items-center justify-center"
+            style="background-image: url('https://i.pinimg.com/736x/77/95/28/7795281b8a563521031961aaf6c7ad0d.jpg'); background-size: 100% 100%; background-position: center; background-repeat: no-repeat;">
+            {{ $slot }}
+        </div>
 
         </div>
     </body>
