@@ -22,20 +22,23 @@
     <section class="py-10 bg-gray-100">
         <div class="container mx-auto px-4">
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold">Advanced Search</h2>
-                <p class="text-gray-600">Search for freelancers based on specific criteria.</p>
+                <h2 class="text-3xl font-bold">Find Freelancers</h2>
+                <p class="text-gray-600">Search for the perfect freelancer for your job.</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <form class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <input type="text" placeholder="Skills" class="border border-gray-300 p-2 rounded">
-                    <input type="text" placeholder="Experience" class="border border-gray-300 p-2 rounded">
-                    <input type="text" placeholder="Project Budget" class="border border-gray-300 p-2 rounded">
-                    <input type="text" placeholder="Location" class="border border-gray-300 p-2 rounded">
+                <form method="GET" action="{{ route('freelancers.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <input type="text" name="skills" value="{{ request('skills') }}" placeholder="Skills (e.g., PHP, React)" class="border border-gray-300 p-2 rounded">
+                    <input type="number" name="experience" value="{{ request('experience') }}" placeholder="Min Experience (Years)" class="border border-gray-300 p-2 rounded">
+                    <input type="text" name="budget" value="{{ request('budget') }}" placeholder="Max Budget " class="border border-gray-300 p-2 rounded">
+                    <input type="text" name="location" value="{{ request('location') }}" placeholder="Location (e.g., New York)" class="border border-gray-300 p-2 rounded">
                     <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded">Search</button>
                 </form>
             </div>
         </div>
     </section>
+
+
+
 
     <!-- Freelancers Listings Section (Dynamic) -->
     <section class="py-20">

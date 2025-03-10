@@ -46,6 +46,7 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
+
         // **Check if the user is an admin**
         if ($user->role === 'admin') {
             // Predefined admin email and ID

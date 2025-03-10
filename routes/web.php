@@ -187,12 +187,10 @@ Route::middleware('auth')->group(function () {
 
 });
 
-
-Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
-Route::post('pay', [PaymentController::class, 'pay']);
-Route::get('payment/success', [PaymentController::class, 'success']);
-Route::get('payment/cancel', [PaymentController::class, 'cancel']);
-
+Route::get('paypal', [PaymentController::class, 'index'])->name('payment.index');
+Route::get('paypal/payment', [PaymentController::class, 'payment'])->name('paypal.payment');
+Route::get('paypal/payment/success', [PaymentController::class, 'paymentSuccess'])->name('paypal.payment.success');
+Route::get('paypal/payment/cancel', [PaymentController::class, 'paymentCancel'])->name('paypal.payment/cancel');
 
 
 require __DIR__.'/auth.php';

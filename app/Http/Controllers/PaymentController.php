@@ -4,73 +4,100 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
+use Illuminate\Support\Str;
+
 
 class PaymentController extends Controller
 {
-    // Show payment page
+     /**
+     * Write code on Method
+     *
+     * @return response()
+     */
     public function index()
     {
         return view('payment.index');
     }
 
-    // Handle payment request
-    public function pay(Request $request, PayPalClient $provider)
+    /**
+     * Write code on Method
+     *
+     * @return response()
+     */
+    public function payment(Request $request)
     {
-        // Prepare payment details
-        $paymentData = [
-            'intent' => 'sale',
-            'payer' => [
-                'payment_method' => 'paypal',
-            ],
-            'transactions' => [
-                [
-                    'amount' => [
-                        'total' => $request->amount,
-                        'currency' => 'USD',
-                    ],
-                    'description' => 'Freelancer Payment',
-                ],
-            ],
-            'redirect_urls' => [
-                'return_url' => route('payment.success'),
-                'cancel_url' => route('payment.cancel'),
-            ],
-        ];
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        $paypalToken = $provider->getAccessToken();
 
-        // Create payment
-        $payment = $provider->createPayment($paymentData);
+        $response = $provider->createOrder([
+            "intent" => "CAPTURE",
+            "application_context" => [
+                "return_url" => route('paypal.payment.success'),
+                "cancel_url" => route('paypal.payment/cancel'),
+            ],
+            "purchase_units" => [
+                0 => [
+                    "amount" => [
+                        "currency_code" => "USD",
+                        "value" => "100.00"
+                    ]
+                ]
+            ]
+        ]);
 
-        // If the payment creation is successful
-        if ($payment['state'] == 'created') {
-            // Find the approval link to redirect to PayPal
-            $approvalLink = collect($payment['links'])->where('rel', 'approval_url')->first();
-            return redirect($approvalLink['href']);
+        if (isset($response['id']) & $response['id'] != null) {
+
+            foreach ($response['links'] as $links) {
+                if ($links['rel'] == 'approve') {
+                    return redirect()->away($links['href']);
+                }
+            }
+
+            return redirect()
+                ->route('cancel.payment')
+                ->with('error', 'Something went wrong.');
+
+        } else {
+            return redirect()
+                ->route('create.payment')
+                ->with('error', $response['message'] ?? 'Something went wrong.');
         }
 
-        return redirect()->route('payment.index')->with('error', 'Payment creation failed');
     }
 
-    // Handle successful payment
-    public function success(Request $request, PayPalClient $provider)
+    /**
+     * Write code on Method
+     *
+     * @return response()
+     */
+    public function paymentCancel()
     {
-        // Get the payment ID and payer ID
-        $paymentId = $request->paymentId;
-        $payerId = $request->PayerID;
+        return redirect()
+              ->route('paypal')
+              ->with('error', $response['message'] ?? 'You have canceled the transaction.');
+    }
 
-        // Execute the payment
-        $payment = $provider->executePayment($paymentId, $payerId);
+    /**
+     * Write code on Method
+     *
+     * @return response()
+     */
+    public function paymentSuccess(Request $request)
+    {
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        $provider->getAccessToken();
+        $response = $provider->capturePaymentOrder($request['token']);
 
-        // If payment is successful
-        if ($payment['state'] == 'approved') {
-            return redirect()->route('payment.index')->with('success', 'Payment successful!');
+        if (isset($response['status']) & $response['status'] == 'COMPLETED') {
+            return redirect()
+                ->route('paypal')
+                ->with('success', 'Transaction complete.');
+        } else {
+            return redirect()
+                ->route('paypal')
+                ->with('error', $response['message'] ?? 'Something went wrong.');
         }
-
-        return redirect()->route('payment.index')->with('error', 'Payment failed');
-    }
-
-    // Handle payment cancellation
-    public function cancel()
-    {
-        return redirect()->route('payment.index')->with('error', 'Payment was cancelled');
     }
 }

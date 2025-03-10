@@ -7,18 +7,44 @@ use Illuminate\Http\Request;
 
 class ClientFreelancerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Query freelancers who have reviews with non-empty review content, and eager load the client data
-        $freelancers = User::where('role', 'freelancer')
-            ->has('reviews')  // Ensures only freelancers with reviews are included
+        // Start with all freelancers
+        $query = User::where('role', 'freelancer')
+            ->has('reviews') // Only freelancers with reviews
             ->with(['reviews' => function ($query) {
-                // Filter out reviews with empty review text
                 $query->whereNotNull('review')->where('review', '!=', '');
-            }, 'reviews.client'])  // Eager load the client who posted the review
-            ->paginate(12);  // Paginate the results
+            }, 'reviews.client']);
 
-        // Pass freelancers data to the view
+        // Apply filters based on search input
+        if ($request->filled('skills')) {
+            $query->where('skills', 'LIKE', '%' . $request->skills . '%');
+        }
+
+        if ($request->filled('experience')) {
+            $query->where('experience', '>=', $request->experience);
+        }
+
+        if ($request->filled('budget')) {
+            // If the budget is numeric (like 5000), compare it to numeric values
+            if (is_numeric($request->budget)) {
+                $query->where('project_budget', '=', (int) $request->budget);
+            }
+            // If the budget is "According to project demand", include those freelancers
+            elseif (strtolower($request->budget) === 'according to project demand') {
+                $query->where('project_budget', 'LIKE', '%According to project demand%');
+            }
+        }
+
+
+
+        if ($request->filled('location')) {
+            $query->where('location', 'LIKE', '%' . $request->location . '%');
+        }
+
+        // Fetch freelancers with pagination
+        $freelancers = $query->paginate(12);
+
         return view('clientFreelancer.index', compact('freelancers'));
     }
 }
