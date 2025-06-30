@@ -1,6 +1,6 @@
 module.exports = {
     content: [
-      './resources/**/*.{html,js,php}',
+      './resources/**/*.{html,js,css,php}',
       './resources/views/**/*.blade.php',
     ],
     theme: {
